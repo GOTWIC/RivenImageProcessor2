@@ -63,3 +63,7 @@ html, body {
     left: 50%;
     transform: translateX(-50%);
 }
+
+canvas {
+    /*border: 1px solid white; /* Makes the canvas visible */
+}
