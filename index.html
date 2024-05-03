@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOTWIC's Riven Processor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <h2></h2>
+            <div class="form">
+                <input type="checkbox" id="checkbox" onchange="toggleDropdown(this)">
+                <label for="checkbox">Checkbox</label><br>
+                <select id="dropdown" disabled>
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                    <option value="option3">Option 3</option>
+                </select><br>
+                <label for="file-upload" class="button">Upload File</label>
+                <input type="file" id="file-upload" accept="image/*" style="display: none;" multiple><br>                
+                <button type="submit" onclick="entry()">Submit</button>
+            </div>
+        </div>
+        <div class="right-section">
+            <h2></h2>
+            <div id="image-container"></div>
+            
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://www.marvinj.org/releases/marvinj-0.7.js"></script>
+</body>
+</html>
