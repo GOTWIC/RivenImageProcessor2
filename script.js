@@ -16,15 +16,16 @@ let bottom_marg = 315;
 function entry() {
     let fileInput = document.getElementById("file-upload");
     let files = fileInput.files;
-    let final_canvases = []; 
+    let final_canvases = []; // Store final canvases instead of images
 
     for (let i = 0; i < files.length; i++) {
         modify_image(files[i], document.getElementById("checkbox").checked, function(canvas) {
-            final_canvases.push(canvas);
+            final_canvases.push(canvas); // Append the final canvas to the list
 
+            // If all canvases have been processed, combine them
             if (final_canvases.length === files.length) {
                 let combinedCanvas = combine_canvases_centered(final_canvases);
-                displayCanvas(combinedCanvas); 
+                displayCanvas(combinedCanvas, document.getElementById("checkbox").checked); // Function to display the final combined canvas
             }
         });
     }
@@ -40,15 +41,15 @@ function modify_image(imageFile, checkboxValue, callback) {
             canvas.height = img.height;
             let ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0); 
-            canvas = crop_image(canvas);
+            canvas = crop_image(canvas); // Assume crop_image now takes and returns a canvas
             if (checkboxValue) {
-                canvas = change_color(canvas);
+                canvas = change_color(canvas); // Assume change_color now takes and returns a canvas
             }
-            callback(canvas);  
+            callback(canvas);  // Return the canvas
         };
-        img.src = event.target.result; 
+        img.src = event.target.result;  // Set the image source to the file content
     };
-    reader.readAsDataURL(imageFile);  
+    reader.readAsDataURL(imageFile);  // Read the file as a Data URL
 }
 
 function crop_image(canvas) {
@@ -62,10 +63,11 @@ function crop_image(canvas) {
     let bottom_crop = canvas.height - bottom_marg * h_modifier;
 
     let croppedCanvas = document.createElement('canvas');
-    croppedCanvas.width = right_crop - left_crop;
+    croppedCanvas.width = right_crop - left_crop; // Ensure these calculations are correct
     croppedCanvas.height = bottom_crop - top_crop;
     let croppedCtx = croppedCanvas.getContext('2d');
 
+    // Check the source and destination coordinates and sizes
     croppedCtx.drawImage(canvas, left_crop, top_crop, right_crop - left_crop, bottom_crop - top_crop, 0, 0, right_crop - left_crop, bottom_crop - top_crop);
 
     return croppedCanvas;
@@ -75,6 +77,31 @@ function change_color(canvas) {
     let ctx = canvas.getContext('2d');
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let data = imageData.data;
+
+    function is_purple(r,g,b){
+        return r >= g + 5 && b >= r && r > 50;
+    }
+
+    function is_inside(i, j, h, w, h_modifier, w_modifier){
+        return i >= 29 * w_modifier && i <= w - 29 * w_modifier && j >= 20 * h_modifier && j <= 355 * h_modifier;
+    }
+
+    function pointInTriangle(px, py, p1x, p1y, p2x, p2y, p3x, p3y) {
+        // Using barycentric coordinates to determine if point p is inside the triangle p1-p2-p3
+        let denominator = (p2y - p3y) * (p1x - p3x) + (p3x - p2x) * (p1y - p3y);
+        let a = ((p2y - p3y) * (px - p3x) + (p3x - p2x) * (py - p3y)) / denominator;
+        let b = ((p3y - p1y) * (px - p3x) + (p1x - p3x) * (py - p3y)) / denominator;
+        let c = 1 - a - b;
+    
+        // Check if point is in the triangle
+        return a >= 0 && b >= 0 && c >= 0;
+    }
+    
+
+    function is_level(i,j,x1,y1,x2,y2,x3,y3,x4,y4,r,g,b){
+        let condition1 = (pointInTriangle(i, j, x1, y1, x2, y2, x3, y3) || pointInTriangle(i, j, x1, y1, x3, y3, x4, y4));
+        return condition1;
+    }
 
     for (let i = 0; i < canvas.width; i++) {
         for (let j = 0; j < canvas.height; j++) {
@@ -88,25 +115,23 @@ function change_color(canvas) {
             let green_modifier = g_m;
             let blue_modifier = b_m;
 
-            if (r <= 35 && g <= 41 && b <= 50) {
-                if (j < 365) {
-                    [data[index], data[index + 1], data[index + 2]] = [32, 33, 36];
-                } else {
-                    [data[index], data[index + 1], data[index + 2]] = [42, 43, 48];
-                }
-            } else if (b > r && b > Math.ceil(1.2 * g) && b < 2 * r) {
-                [data[index], data[index + 1], data[index + 2]] = [
-                    Math.ceil(r * red_modifier / 110),
-                    Math.ceil(g * green_modifier / 90),
-                    Math.ceil(b * blue_modifier / 135)
-                ];
-            } else if (g > b * 0.4 || b > r || g > r * 0.5 || r > 4 * g) {
-                let bw = Math.ceil((r + g + b) / 3);
-                [data[index], data[index + 1], data[index + 2]] = [bw, bw, bw];
+            height_modifier = canvas.height / 415;
+            width_modifier = canvas.width / 290;
+
+            // if its purple, don't touch it
+            if (is_purple(r,g,b)){
+                continue;
             }
 
-            if (isBackground(i, j, r, g, b)) {
-                [data[index], data[index + 1], data[index + 2], data[index + 3]] = [42, 43, 48, 255];
+            let point1 = [Math.floor(50 * width_modifier), Math.floor(360 * height_modifier)];
+            let point2 = [Math.floor(67 * width_modifier), Math.floor(374 * height_modifier)];
+
+            // if its outside the margins, make it grey
+            if(
+                !is_inside(i, j, canvas.height, canvas.width, height_modifier, width_modifier) &&
+                !is_level(i,j,point1[0],point1[1],point2[0],point2[1],canvas.width - point2[0],point2[1],canvas.width - point1[0],point1[1],r,g,b)
+            ){
+                [data[index], data[index + 1], data[index + 2]] = [42, 43, 48];
             }
         }
     }
@@ -155,9 +180,9 @@ function combine_canvases_centered(canvases) {
     return combinedCanvas;
 }
 
-function displayCanvas(canvas) {
+function displayCanvas(canvas, normalized) {
     // Apply watermark to the canvas
-    canvas = watermark(canvas);
+    canvas = watermark(canvas, normalized);
 
     // Set CSS properties to visually scale down the canvas while preserving aspect ratio
     canvas.style.maxWidth = '90%';
@@ -184,7 +209,7 @@ function displayCanvas(canvas) {
     });
 }
 
-function watermark(canvas) {
+function watermark(canvas, normalized) {
     let ctx = canvas.getContext('2d');
 
     // Draw the input image onto the canvas if necessary
@@ -195,14 +220,18 @@ function watermark(canvas) {
     let watermark_width = 260; // Ensure this width matches your watermark dimensions
     let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let data = imgData.data;
-
     let watermark_idx = 0;
+    let dim = 0.7;
+
+    if (normalized) {
+        dim = 0.97;
+    }
 
     // Apply the watermark according to the watermark array
     for (let i = 0; i < data.length; i += 4) {
         for (let j = 0; j < 3; j++) { // Modify R, G, B (skip Alpha)
             if (watermark_arr[watermark_idx] != 1){
-                data[i+j] = Math.floor(data[i+j] * 0.7); // Apply watermark effect
+                data[i+j] = Math.floor(data[i+j] * dim); // Apply watermark effect
             }
         }
         
@@ -225,12 +254,14 @@ function watermark(canvas) {
 }
 
 function downloadCanvasAsImage(canvas) {
+    // Use the canvas data URL as the download source
     let imageUrl = canvas.toDataURL('image/png');
     
+    // Create a temporary anchor element
     let link = document.createElement('a');
     link.href = imageUrl;
-    link.download = 'downloaded_image.png';  
-    link.click();  
+    link.download = 'downloaded_image.png';  // Set the default file name for download
+    link.click();  // Programmatically click the anchor to trigger the download
 }
 
 function get_watermark_array_1() {
@@ -246,25 +277,31 @@ function get_watermark_array_2() {
 
 // TODO: Make this work with rest of the code
 function combine_images_left_aligned(images, callback) {
+    // Calculate number of rows and columns for the grid
     let num_images = images.length;
     let num_cols = Math.ceil(Math.sqrt(num_images));
     let num_rows = Math.ceil(num_images / num_cols);
 
+    // Calculate width and height of each image
     let image_width = images[0].width;
     let image_height = images[0].height;
 
+    // Create a canvas for the combined image
     let combinedCanvas = document.createElement('canvas');
     let ctx = combinedCanvas.getContext('2d');
 
+    // Set canvas dimensions to fit the combined image
     combinedCanvas.width = num_cols * image_width;
     combinedCanvas.height = num_rows * image_height;
 
+    // Stitch images together in a grid-like structure
     for (let i = 0; i < num_images; i++) {
         let col = i % num_cols;
         let row = Math.floor(i / num_cols);
         ctx.drawImage(images[i], col * image_width, row * image_height);
     }
 
+    // Convert combined canvas to image
     let combinedImage = new Image();
     combinedImage.src = combinedCanvas.toDataURL();
 
