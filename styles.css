@@ -9,15 +9,39 @@ html, body {
     height: 100%;
 }
 
+
 .left-section {
-    background-color: #2e2936;
+    background-color: #2e2936d3;
     width: 30%;
+    background-image: url('images/bg1.webp');
 }
 
 .right-section {
-    background-color: #484054;
+    background-color: #484054d3;
     width: 70%;
     position: relative;
+    background-image: url('images/bg2.webp');
+}
+
+
+.frosted-overlay-left, .frosted-overlay-right {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+
+.frosted-overlay-left {
+  background-color: rgba(15, 13, 19, 0.7);
+  backdrop-filter: blur(10px);
+}
+
+.frosted-overlay-right {
+  background-color: rgba(29, 22, 44, 0.7);
+  backdrop-filter: blur(20px);
 }
 
 .container {
@@ -25,27 +49,37 @@ html, body {
 }
 
 .uploaded-image {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
+.output {
+  z-index: 1; 
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  display: flex;
+}
+  
 .left-section, .right-section {
-    overflow: hidden;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;  /* Change to column layout */
-    align-items: center;     /* Keeps horizontal centering */
-    justify-content: center; /* Center vertically, but we'll adjust spacing inside the form */
-    color: white;
-    padding: 40px;
-    border-right: 1px solid #6200ff;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;    
+  justify-content: center;
+  color: white;
+  padding: 40px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; 
 }
 
 .download-button {
     position: absolute;
-    bottom: 20px; 
+    bottom: 5%; 
     left: 50%;
     transform: translateX(-50%);
 }
@@ -56,11 +90,6 @@ html, body {
     left: 50%;
     transform: translateX(-50%);
 }
-
-.canvas{
-  border: 2px solid #6200ff;;
-}
-
 
 .download-button {
   background-color: #e5c2fb;
@@ -83,6 +112,14 @@ html, body {
 
 .download-button:hover {
   box-shadow: rgba(185, 44, 187, 0.366) 0 -25px 18px -14px inset,rgba(185, 44, 187, 0.366) 0 1px 2px,rgba(185, 44, 187, 0.366) 0 2px 4px,rgba(185, 44, 187, 0.366) 0 4px 8px,rgba(185, 44, 187, 0.366) 0 8px 16px,rgba(185, 44, 187, 0.366) 0 16px 32px;
+}
+
+.sep {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  background-color: #2a2b30;
 }
 
 
@@ -131,6 +168,36 @@ html, body {
   border-radius: 10px;
 }
 
+.lin-grad, canvas {
+  position: absolute;
+}
+
+
+.lin-grad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(
+      45deg,
+      #f8c6ff,  
+      #ff77ff,   
+      #ff00ff,  
+      #b700ff,   
+      #7900ff,    
+      #9400d3,   
+      #8a2be2,   
+      #a450ff,  
+      #f8c6ff
+  );
+  animation: glowing-button-85 10s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 5px;
+  z-index: 2;
+  filter: blur(10px);
+  -webkit-filter: blur(10px);
+}
+
 @keyframes glowing-button-85 {
   0% {
     background-position: 0 0;
@@ -160,6 +227,7 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 0px;
+    z-index: 1;
 }
 
 

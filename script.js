@@ -32,7 +32,7 @@ function entry() {
 
             if (final_canvases.length === files.length) {
                 let combinedCanvas = combine_canvases_centered(final_canvases);
-                updateLoadingBar(100);
+                removeLoadingBar();
                 displayCanvas(combinedCanvas, document.getElementById("normalize").checked); 
             }
         });
@@ -40,35 +40,41 @@ function entry() {
 }
 
 function createLoadingBar() {
-    // Remove existing loading bar if it exists
     const existingBar = document.getElementById('loading-bar-container');
     if (existingBar) {
         existingBar.remove();
     }
 
-    // Create loading bar container
     const loadingBarContainer = document.createElement('div');
     loadingBarContainer.id = 'loading-bar-container';
-    loadingBarContainer.style.position = 'absolute';  // Make it fixed to the top of the viewport
-    loadingBarContainer.style.top = '3%';           // Positioned at the very top
+    loadingBarContainer.style.position = 'absolute';  
+    loadingBarContainer.style.top = '3%';          
     loadingBarContainer.style.left = '25%';
-    loadingBarContainer.style.width = '50%';      // Take the full width of the viewport
-    loadingBarContainer.style.height = '20px';     // Fixed height
-    loadingBarContainer.style.backgroundColor = 'grey';
-    loadingBarContainer.style.zIndex = '1000';     // Make sure it's on top of other elements
+    loadingBarContainer.style.width = '50%';     
+    loadingBarContainer.style.height = '20px';    
+    loadingBarContainer.style.backgroundColor = '#231c29';
+    loadingBarContainer.style.zIndex = '1000';    
+    loadingBarContainer.style.borderRadius = '10px';
 
-    // Create loading bar
     const loadingBar = document.createElement('div');
     loadingBar.id = 'loading-bar';
     loadingBar.style.height = '100%';
     loadingBar.style.backgroundColor = '#3a005c';
-    loadingBar.style.width = '0%'; // Initialize with 0% width
+    loadingBar.style.width = '0%';
+    loadingBar.style.borderRadius = '10px';
 
-    // Append loading bar to container
+
     loadingBarContainer.appendChild(loadingBar);
 
     let rightSection = document.querySelector('.right-section');
     rightSection.appendChild(loadingBarContainer);
+}
+
+function removeLoadingBar() {
+    const loadingBarContainer = document.getElementById('loading-bar-container');
+    if (loadingBarContainer) {
+        loadingBarContainer.remove();
+    }
 }
 
 function updateLoadingBar(percent) {
@@ -236,26 +242,50 @@ function combine_canvases_centered(canvases) {
 function displayCanvas(canvas, normalized) {
     canvas = watermark(canvas, normalized);
 
+    canvas.style.maxWidth = '40%'; 
+    canvas.style.maxHeight = '75%';
 
-    canvas.style.maxWidth = '90%';
-    canvas.style.maxHeight = '90%';
-    canvas.style.width = 'auto';
-    canvas.style.height = 'auto';
 
-    let rightSection = document.querySelector('.right-section');
-    rightSection.innerHTML = '';
 
-    rightSection.appendChild(canvas);
+    let rightSection = document.querySelector('.output');
+    rightSection.innerHTML = ''; 
 
+
+    let linGradDiv = document.createElement('div');
+    linGradDiv.className = 'lin-grad';
+    rightSection.appendChild(linGradDiv);
+
+    // Adjust the size after appending to ensure correct measurements
+    requestAnimationFrame(() => {
+        linGradDiv.style.width = `${canvas.offsetWidth+8}px`; // Match the canvas width
+        linGradDiv.style.height = `${canvas.offsetHeight+8}px`; // Match the canvas height
+    });
+
+    let sepDiv = document.createElement('div');
+    sepDiv.className = 'sep';
+    sepDiv.style.zIndex = '2';
+    rightSection.appendChild(sepDiv);
+
+    // Adjust the size after appending to ensure correct measurements
+    requestAnimationFrame(() => {
+        sepDiv.style.width = `${canvas.offsetWidth}px`; // Match the canvas width
+        sepDiv.style.height = `${canvas.offsetHeight}px`; // Match the canvas height
+    });
+
+    // Create and append the download button
     let downloadButton = document.createElement('button');
     downloadButton.innerText = 'Download Image';
     downloadButton.classList.add('download-button');
     rightSection.appendChild(downloadButton);
 
+    canvas.style.zIndex = '4'; // Ensure the canvas is above the lin_grad div
+    rightSection.appendChild(canvas);
+
     downloadButton.addEventListener('click', function() {
         downloadCanvasAsImage(canvas);
     });
 }
+
 
 function watermark(canvas, normalized) {
     let ctx = canvas.getContext('2d');
