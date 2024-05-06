@@ -57,6 +57,10 @@ html, body {
     transform: translateX(-50%);
 }
 
+.canvas{
+  border: 2px solid #6200ff;;
+}
+
 
 .download-button {
   background-color: #e5c2fb;

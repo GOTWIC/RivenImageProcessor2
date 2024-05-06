@@ -129,6 +129,7 @@ function change_color(canvas, color_option) {
         'blue': [65, 95, 100],
         'green': [75 , 100, 75],
         'gold': [125, 100, 75],
+        'white': [170, 170, 170],
     }
 
     function is_purple(r,g,b){
