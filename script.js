@@ -1,5 +1,5 @@
 function toggleDropdown(checkbox) {
-    var dropdown = document.getElementById("dropdown");
+    var dropdown = document.getElementById("color_options");
     dropdown.disabled = !checkbox.checked;
 }
 
@@ -22,8 +22,10 @@ function entry() {
 
     createLoadingBar();
 
+    let color_option = document.getElementById("color_options").value;
+
     for (let i = 0; i < files.length; i++) {
-        modify_image(files[i], document.getElementById("checkbox").checked, function(canvas) {
+        modify_image(files[i], document.getElementById("normalize").checked, color_option, function(canvas) {
             final_canvases.push(canvas);
 
             updateLoadingBar((final_canvases.length / files.length) * 80);
@@ -31,7 +33,7 @@ function entry() {
             if (final_canvases.length === files.length) {
                 let combinedCanvas = combine_canvases_centered(final_canvases);
                 updateLoadingBar(100);
-                displayCanvas(combinedCanvas, document.getElementById("checkbox").checked); 
+                displayCanvas(combinedCanvas, document.getElementById("normalize").checked); 
             }
         });
     }
@@ -74,7 +76,7 @@ function updateLoadingBar(percent) {
     bar.style.width = percent + '%';
 }
 
-function modify_image(imageFile, checkboxValue, callback) {
+function modify_image(imageFile, normalize_flag, color_option, callback) {
     let reader = new FileReader();
     reader.onload = function(event) {
         let img = new Image();
@@ -85,8 +87,8 @@ function modify_image(imageFile, checkboxValue, callback) {
             let ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0); 
             canvas = crop_image(canvas); 
-            if (checkboxValue) {
-                canvas = change_color(canvas); 
+            if (normalize_flag) {
+                canvas = change_color(canvas, color_option); 
             }
             callback(canvas);  
         };
@@ -116,10 +118,18 @@ function crop_image(canvas) {
     return croppedCanvas;
 }
 
-function change_color(canvas) {
+function change_color(canvas, color_option) {
     let ctx = canvas.getContext('2d');
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let data = imageData.data;
+
+    let colors = {
+        'purple': [110, 90, 135],
+        'red': [175,95,195],  
+        'blue': [65, 95, 100],
+        'green': [75 , 100, 75],
+        'gold': [125, 100, 75],
+    }
 
     function is_purple(r,g,b){
         return r >= g + 5 && b >= r && r > 50;
@@ -154,15 +164,14 @@ function change_color(canvas) {
             let b = data[index + 2];
             let a = data[index + 3]; // alpha channel
 
-            let red_modifier = r_m;
-            let green_modifier = g_m;
-            let blue_modifier = b_m;
+            let [red_modifier, green_modifier, blue_modifier] = colors[color_option];
 
             height_modifier = canvas.height / 415;
             width_modifier = canvas.width / 290;
 
             // if its purple, don't touch it
             if (is_purple(r,g,b)){
+                [data[index], data[index + 1], data[index + 2]] = [Math.ceil(r*red_modifier/110), Math.ceil(g*green_modifier/90), Math.ceil(b*blue_modifier/135)];
                 continue;
             }
 
