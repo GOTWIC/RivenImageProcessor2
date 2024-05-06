@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOTWIC's Riven Processor</title>
+    <link rel="stylesheet" href="styles.scss">
     <link rel="stylesheet" href="styles.css">
+    
 </head>
 <body>
     <div class="container">
@@ -15,17 +17,47 @@
                     <label for="checkbox">Normalize</label>
                 </div>
                 <div class="form-item">
-                    <select id="dropdown" disabled onchange="entry();">
+                    <select id="dropdown" class="custom-select" disabled onchange="entry();">
                         <option value="option1">Option 1</option>
                         <option value="option2">Option 2</option>
                         <option value="option3">Option 3</option>
                     </select>
+                    
                 </div>
                 <div class="form-item">
                     <label for="file-upload" class="button-85">Upload Files</label>
                     <input type="file" id="file-upload" accept="image/*" style="display: none;" multiple onchange="entry();">
                 </div>
+                <div class="form-item">
+                    
+                </div>
             </div>
+
+<!--
+            <form action="">
+                <label class="form-control">
+                  <input type="checkbox" name="checkbox" />
+                  Checkbox
+                </label>
+              
+                <label class="form-control">
+                  <input type="checkbox" name="checkbox-checked" checked />
+                  Checkbox - checked
+                </label>
+              
+                <label class="form-control form-control--disabled">
+                  <input type="checkbox" name="checkbox-disabled" disabled />
+                  Checkbox Disabled
+                </label>
+              
+                <label class="form-control form-control--disabled">
+                  <input type="checkbox" name="checkbox-disabled-checked" checked disabled />
+                  Checkbox Disabled - checked
+                </label>
+              </form>
+
+            -->
+
         </div>
         <div class="right-section">
         </div>
