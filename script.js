@@ -125,7 +125,7 @@ function change_color(canvas, color_option) {
 
     let colors = {
         'purple': [110, 90, 135],
-        'red': [175,95,195],  
+        'red': [200,110,110],  
         'blue': [65, 95, 100],
         'green': [75 , 100, 75],
         'gold': [125, 100, 75],
