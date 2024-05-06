@@ -10,25 +10,14 @@ html, body {
 }
 
 .left-section {
-    background-color: #333;
+    background-color: #2e2936;
     width: 30%;
 }
 
 .right-section {
-    background-color: #555;
+    background-color: #484054;
     width: 70%;
     position: relative;
-}
-
-.button {
-    display: inline-block;
-    padding: 10px 20px;
-    color: #fff;
-    cursor: pointer;
-}
-
-.button:hover {
-    background-color: #0056b3;
 }
 
 .container {
@@ -46,15 +35,12 @@ html, body {
     overflow: hidden;
     box-sizing: border-box;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;  /* Change to column layout */
+    align-items: center;     /* Keeps horizontal centering */
+    justify-content: center; /* Center vertically, but we'll adjust spacing inside the form */
     color: white;
-    padding: 20px;
-    border-right: 1px solid #ccc;
-    box-sizing: border-box;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    padding: 40px;
+    border-right: 1px solid #6200ff;
 }
 
 .download-button {
@@ -64,6 +50,118 @@ html, body {
     transform: translateX(-50%);
 }
 
-canvas {
-    /*border: 1px solid white; /* Makes the canvas visible */
+.loading-bar {
+    position: absolute;
+    top: 20px; 
+    left: 50%;
+    transform: translateX(-50%);
 }
+
+
+.download-button {
+  background-color: #e5c2fb;
+  border-radius: 100px;
+  box-shadow: rgba(115, 44, 187, 0.2) 0 -25px 18px -14px inset,rgba(115, 44, 187, 0.2) 0 1px 2px,rgba(115, 44, 187, 0.2) 0 2px 4px,rgba(115, 44, 187, 0.2) 0 4px 8px,rgba(115, 44, 187, 0.2) 0 8px 16px,rgba(115, 44, 187, 0.2) 0 16px 32px;
+  color: rgb(83, 0, 128);
+  cursor: pointer;
+  display: inline-block;
+  font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+  padding: 7px 20px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 250ms;
+  border: 0;
+  font-size: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.download-button:hover {
+  box-shadow: rgba(185, 44, 187, 0.366) 0 -25px 18px -14px inset,rgba(185, 44, 187, 0.366) 0 1px 2px,rgba(185, 44, 187, 0.366) 0 2px 4px,rgba(185, 44, 187, 0.366) 0 4px 8px,rgba(185, 44, 187, 0.366) 0 8px 16px,rgba(185, 44, 187, 0.366) 0 16px 32px;
+}
+
+
+
+.button-85 {
+  padding: 0.6em 2em;
+  border: none;
+  outline: none;
+  color: rgb(255, 255, 255);
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  margin-top: 20px;
+}
+
+.button-85:before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #f8c6ff,  
+    #ff77ff,   
+    #ff00ff,  
+    #b700ff,   
+    #7900ff,    
+    #9400d3,   
+    #8a2be2,   
+    #a450ff,  
+    #f8c6ff  
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-button-85 20s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+@keyframes glowing-button-85 {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.button-85:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #222;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
+
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+
+.form-item label {
+    display: inline-block; 
+    margin-left: 5px;
+}
+
+

@@ -9,24 +9,25 @@
 <body>
     <div class="container">
         <div class="left-section">
-            <h2></h2>
             <div class="form">
-                <input type="checkbox" id="checkbox" onchange="toggleDropdown(this)">
-                <label for="checkbox">Checkbox</label><br>
-                <select id="dropdown" disabled>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                </select><br>
-                <label for="file-upload" class="button">Upload File</label>
-                <input type="file" id="file-upload" accept="image/*" style="display: none;" multiple><br>                
-                <button type="submit" onclick="entry()">Submit</button>
+                <div class="form-item">
+                    <input type="checkbox" id="checkbox" onchange="toggleDropdown(this); entry();">
+                    <label for="checkbox">Normalize</label>
+                </div>
+                <div class="form-item">
+                    <select id="dropdown" disabled onchange="entry();">
+                        <option value="option1">Option 1</option>
+                        <option value="option2">Option 2</option>
+                        <option value="option3">Option 3</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label for="file-upload" class="button-85">Upload Files</label>
+                    <input type="file" id="file-upload" accept="image/*" style="display: none;" multiple onchange="entry();">
+                </div>
             </div>
         </div>
         <div class="right-section">
-            <h2></h2>
-            <div id="image-container"></div>
-            
         </div>
     </div>
 

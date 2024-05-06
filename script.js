@@ -16,19 +16,62 @@ let bottom_marg = 315;
 function entry() {
     let fileInput = document.getElementById("file-upload");
     let files = fileInput.files;
-    let final_canvases = []; // Store final canvases instead of images
+    let final_canvases = []; 
+
+    if (files.length === 0) { return; }
+
+    createLoadingBar();
 
     for (let i = 0; i < files.length; i++) {
         modify_image(files[i], document.getElementById("checkbox").checked, function(canvas) {
-            final_canvases.push(canvas); // Append the final canvas to the list
+            final_canvases.push(canvas);
 
-            // If all canvases have been processed, combine them
+            updateLoadingBar((final_canvases.length / files.length) * 80);
+
             if (final_canvases.length === files.length) {
                 let combinedCanvas = combine_canvases_centered(final_canvases);
-                displayCanvas(combinedCanvas, document.getElementById("checkbox").checked); // Function to display the final combined canvas
+                updateLoadingBar(100);
+                displayCanvas(combinedCanvas, document.getElementById("checkbox").checked); 
             }
         });
     }
+}
+
+function createLoadingBar() {
+    // Remove existing loading bar if it exists
+    const existingBar = document.getElementById('loading-bar-container');
+    if (existingBar) {
+        existingBar.remove();
+    }
+
+    // Create loading bar container
+    const loadingBarContainer = document.createElement('div');
+    loadingBarContainer.id = 'loading-bar-container';
+    loadingBarContainer.style.position = 'absolute';  // Make it fixed to the top of the viewport
+    loadingBarContainer.style.top = '3%';           // Positioned at the very top
+    loadingBarContainer.style.left = '25%';
+    loadingBarContainer.style.width = '50%';      // Take the full width of the viewport
+    loadingBarContainer.style.height = '20px';     // Fixed height
+    loadingBarContainer.style.backgroundColor = 'grey';
+    loadingBarContainer.style.zIndex = '1000';     // Make sure it's on top of other elements
+
+    // Create loading bar
+    const loadingBar = document.createElement('div');
+    loadingBar.id = 'loading-bar';
+    loadingBar.style.height = '100%';
+    loadingBar.style.backgroundColor = '#3a005c';
+    loadingBar.style.width = '0%'; // Initialize with 0% width
+
+    // Append loading bar to container
+    loadingBarContainer.appendChild(loadingBar);
+
+    let rightSection = document.querySelector('.right-section');
+    rightSection.appendChild(loadingBarContainer);
+}
+
+function updateLoadingBar(percent) {
+    let bar = document.getElementById("loading-bar");
+    bar.style.width = percent + '%';
 }
 
 function modify_image(imageFile, checkboxValue, callback) {
@@ -41,15 +84,15 @@ function modify_image(imageFile, checkboxValue, callback) {
             canvas.height = img.height;
             let ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0); 
-            canvas = crop_image(canvas); // Assume crop_image now takes and returns a canvas
+            canvas = crop_image(canvas); 
             if (checkboxValue) {
-                canvas = change_color(canvas); // Assume change_color now takes and returns a canvas
+                canvas = change_color(canvas); 
             }
-            callback(canvas);  // Return the canvas
+            callback(canvas);  
         };
-        img.src = event.target.result;  // Set the image source to the file content
+        img.src = event.target.result; 
     };
-    reader.readAsDataURL(imageFile);  // Read the file as a Data URL
+    reader.readAsDataURL(imageFile); 
 }
 
 function crop_image(canvas) {
@@ -181,29 +224,24 @@ function combine_canvases_centered(canvases) {
 }
 
 function displayCanvas(canvas, normalized) {
-    // Apply watermark to the canvas
     canvas = watermark(canvas, normalized);
 
-    // Set CSS properties to visually scale down the canvas while preserving aspect ratio
+
     canvas.style.maxWidth = '90%';
     canvas.style.maxHeight = '90%';
     canvas.style.width = 'auto';
     canvas.style.height = 'auto';
 
-    // Clear previous content of the right section
     let rightSection = document.querySelector('.right-section');
     rightSection.innerHTML = '';
 
-    // Append the canvas element to the right section
     rightSection.appendChild(canvas);
 
-    // Create a download button
     let downloadButton = document.createElement('button');
     downloadButton.innerText = 'Download Image';
     downloadButton.classList.add('download-button');
     rightSection.appendChild(downloadButton);
 
-    // Attach event listener to the download button
     downloadButton.addEventListener('click', function() {
         downloadCanvasAsImage(canvas);
     });
