@@ -16,16 +16,15 @@ let bottom_marg = 315;
 function entry() {
     let fileInput = document.getElementById("file-upload");
     let files = fileInput.files;
-    let final_canvases = []; // Store final canvases instead of images
+    let final_canvases = []; 
 
     for (let i = 0; i < files.length; i++) {
         modify_image(files[i], document.getElementById("checkbox").checked, function(canvas) {
-            final_canvases.push(canvas); // Append the final canvas to the list
+            final_canvases.push(canvas);
 
-            // If all canvases have been processed, combine them
             if (final_canvases.length === files.length) {
                 let combinedCanvas = combine_canvases_centered(final_canvases);
-                displayCanvas(combinedCanvas); // Function to display the final combined canvas
+                displayCanvas(combinedCanvas); 
             }
         });
     }
@@ -41,15 +40,15 @@ function modify_image(imageFile, checkboxValue, callback) {
             canvas.height = img.height;
             let ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0); 
-            canvas = crop_image(canvas); // Assume crop_image now takes and returns a canvas
+            canvas = crop_image(canvas);
             if (checkboxValue) {
-                canvas = change_color(canvas); // Assume change_color now takes and returns a canvas
+                canvas = change_color(canvas);
             }
-            callback(canvas);  // Return the canvas
+            callback(canvas);  
         };
-        img.src = event.target.result;  // Set the image source to the file content
+        img.src = event.target.result; 
     };
-    reader.readAsDataURL(imageFile);  // Read the file as a Data URL
+    reader.readAsDataURL(imageFile);  
 }
 
 function crop_image(canvas) {
@@ -63,11 +62,10 @@ function crop_image(canvas) {
     let bottom_crop = canvas.height - bottom_marg * h_modifier;
 
     let croppedCanvas = document.createElement('canvas');
-    croppedCanvas.width = right_crop - left_crop; // Ensure these calculations are correct
+    croppedCanvas.width = right_crop - left_crop;
     croppedCanvas.height = bottom_crop - top_crop;
     let croppedCtx = croppedCanvas.getContext('2d');
 
-    // Check the source and destination coordinates and sizes
     croppedCtx.drawImage(canvas, left_crop, top_crop, right_crop - left_crop, bottom_crop - top_crop, 0, 0, right_crop - left_crop, bottom_crop - top_crop);
 
     return croppedCanvas;
@@ -127,8 +125,8 @@ function isBackground(i, j, r, g, b) {
 
 function combine_canvases_centered(canvases) {
     let num_images = canvases.length;
-    let num_cols = Math.min(Math.ceil(Math.sqrt(num_images)),1);
-    let num_rows = Math.min(Math.ceil(num_images / num_cols),1);
+    let num_cols = Math.max(Math.ceil(Math.sqrt(num_images)),1);
+    let num_rows = Math.max(Math.ceil(num_images / num_cols),1);
 
     let image_width = canvases[0].width;
     let image_height = canvases[0].height;
@@ -227,14 +225,12 @@ function watermark(canvas) {
 }
 
 function downloadCanvasAsImage(canvas) {
-    // Use the canvas data URL as the download source
     let imageUrl = canvas.toDataURL('image/png');
     
-    // Create a temporary anchor element
     let link = document.createElement('a');
     link.href = imageUrl;
-    link.download = 'downloaded_image.png';  // Set the default file name for download
-    link.click();  // Programmatically click the anchor to trigger the download
+    link.download = 'downloaded_image.png';  
+    link.click();  
 }
 
 function get_watermark_array_1() {
@@ -250,31 +246,25 @@ function get_watermark_array_2() {
 
 // TODO: Make this work with rest of the code
 function combine_images_left_aligned(images, callback) {
-    // Calculate number of rows and columns for the grid
     let num_images = images.length;
     let num_cols = Math.ceil(Math.sqrt(num_images));
     let num_rows = Math.ceil(num_images / num_cols);
 
-    // Calculate width and height of each image
     let image_width = images[0].width;
     let image_height = images[0].height;
 
-    // Create a canvas for the combined image
     let combinedCanvas = document.createElement('canvas');
     let ctx = combinedCanvas.getContext('2d');
 
-    // Set canvas dimensions to fit the combined image
     combinedCanvas.width = num_cols * image_width;
     combinedCanvas.height = num_rows * image_height;
 
-    // Stitch images together in a grid-like structure
     for (let i = 0; i < num_images; i++) {
         let col = i % num_cols;
         let row = Math.floor(i / num_cols);
         ctx.drawImage(images[i], col * image_width, row * image_height);
     }
 
-    // Convert combined canvas to image
     let combinedImage = new Image();
     combinedImage.src = combinedCanvas.toDataURL();
 
